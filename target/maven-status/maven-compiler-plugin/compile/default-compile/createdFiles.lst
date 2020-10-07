@@ -1,0 +1,6 @@
+com\compomics\coslib\controller\ProcessClusters.class
+com\compomics\coslib\model\GroupingField.class
+com\compomics\coslib\model\Data.class
+com\compomics\coslib\controller\IndexSpectra.class
+com\compomics\coslib\MainClass.class
+com\compomics\coslib\Person.class
