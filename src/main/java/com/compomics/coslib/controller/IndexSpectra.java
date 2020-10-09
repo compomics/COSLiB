@@ -36,7 +36,7 @@ public class IndexSpectra {
             
             this.data.setIndex((ArrayList<IndexKey>) giExp.generate());
             
-            //sort the index precursor mass accending order
+            //sort the index based on precursor mass in accending order
             SortIndex();
         } catch (IOException ex) {
             Logger.getLogger(IndexSpectra.class.getName()).log(Level.SEVERE, null, ex);
