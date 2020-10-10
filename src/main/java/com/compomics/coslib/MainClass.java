@@ -1,6 +1,7 @@
 package com.compomics.coslib;
 
 import com.compomics.coslib.controller.BuildLibrary;
+import com.compomics.coslib.controller.Extract_inbotResult;
 import com.compomics.coslib.controller.IndexSpectra;
 import java.io.File;
 import com.compomics.coslib.model.Data;
@@ -12,6 +13,9 @@ import com.compomics.coslib.model.Data;
 public class MainClass {
 
     public static void main(String[] args) {
+        String ionbot_result_folder = "";
+        Extract_inbotResult ex = new Extract_inbotResult(ionbot_result_folder);
+        ex.Extract();
 
         File fI = new File("");
         File fO = new File("");

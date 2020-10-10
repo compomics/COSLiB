@@ -2,9 +2,12 @@ package com.compomics.coslib.controller;
 
 import com.compomics.ms2io.controller.MgfWriter;
 import com.compomics.ms2io.controller.SpectraWriter;
+import com.compomics.ms2io.model.Spectrum;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -30,16 +33,18 @@ public class Extract_inbotResult {
         
         //create threads for each task
         ExecutorService execs = Executors.newFixedThreadPool(num_files);
-        
+        ArrayList<Spectrum> extractedSpecs;
         for (int f = 0; f < num_files; f++) {
             File ionbot_result = files[f];
             File mgffile = files[++f];
             File outputfile= new File(this.result_dir+ "/" +FilenameUtils.removeExtension(ionbot_result.getName()) +".mgf");
             
             GetIdentifiedSpectra identifiy= new GetIdentifiedSpectra(ionbot_result, mgffile);
-            
-            //instantiate mgf writer with the output file and result list of spectra
-            SpectraWriter wr=new MgfWriter(outputfile, execs.submit(identifiy));
+            Future future = execs.submit(identifiy);
+            extractedSpecs=(ArrayList<Spectrum>)future;
+
+            //instantiate mgf writer with the output file and result list of spectra            
+            SpectraWriter wr=new MgfWriter(outputfile,extractedSpecs);
             
             //write to the file
             wr.write();
