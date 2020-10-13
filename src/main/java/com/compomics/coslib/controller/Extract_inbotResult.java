@@ -35,8 +35,8 @@ public class Extract_inbotResult {
         ExecutorService execs = Executors.newFixedThreadPool(num_files);
         ArrayList<Spectrum> extractedSpecs;
         for (int f = 0; f < num_files; f++) {
-            File ionbot_result = files[f];
-            File mgffile = files[++f];
+            File mgffile = files[f];
+            File ionbot_result  = files[++f];
             File outputfile= new File(this.result_dir+ "/" +FilenameUtils.removeExtension(ionbot_result.getName()) +".mgf");
             
             GetIdentifiedSpectra identifiy= new GetIdentifiedSpectra(ionbot_result, mgffile);

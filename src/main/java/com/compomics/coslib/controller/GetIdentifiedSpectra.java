@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 /**
- *This callable class creates list of spectra for a given ionbot result file and corresponding mgf file and return to the caller
+ * This callable class creates list of spectra for a given ionbot result file
+ * and corresponding mgf file and return to the caller
+ *
  * @author Genet
  */
 public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
@@ -28,32 +30,34 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
     }
 
     @Override
-    public ArrayList<Spectrum> call(){
+    public ArrayList<Spectrum> call() {
         ArrayList<Spectrum> identifiedSpecs = new ArrayList<>();
 
         try {
             //read file here and instantiate indexer 
             ArrayList<IndexKey> fileIndex = new ArrayList<>();
             Indexer giExp = new Indexer(this.mgfFile);
-            if (this.mgfFile.getName().endsWith("mgf")) {
-
-            } else if (this.mgfFile.getName().endsWith("msp")) {
-
-            }
-
+            
             //Generate index and add to fileIndex
             fileIndex.addAll(giExp.generate());
 
             //sort the index based on scan number in accending order
             fileIndex.sort((spec1, spec2) -> spec1.getScanNum().compareTo(spec2.getScanNum()));
 
+            SpectraReader specReader = null;
             //create object to spectrum reader ms2io
-            SpectraReader specReader = new MgfReader(mgfFile, fileIndex);
+            if (this.mgfFile.getName().endsWith("mgf")) {
+                
+                specReader = new MgfReader(mgfFile, fileIndex);
+                
+            } else if (this.mgfFile.getName().endsWith("msp")) {
 
-            String line = "";
+            }
+
+            String line;
 
             String[] psm;
-            int scannum = 0;
+            int scannum;
             BufferedReader br = new BufferedReader(new FileReader(this.ionbot_result));
 
             //reading the column name and do nothing
@@ -62,18 +66,20 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
             int num_spectra = fileIndex.size();
             Spectrum current_spec;
             Modification mod;
-            int modPos = 0;
+            int modPos;
             String modified_aa;
-            String modName = "";
-            String unimode = "";
+            String modName;
+            String unimode;
 
             ArrayList<Modification> mods;
             String modification;
             String[] modMain;
             String[] temp;
             int len_temp;
-            while ((line = br.readLine()) != null) {
-
+            int count =0;
+            while ((line = br.readLine()) != null && specReader != null) {
+                count++;
+                
                 mods = new ArrayList<>();
                 psm = line.split(",");
                 scannum = Integer.parseInt(psm[1]);
@@ -86,12 +92,12 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
                         current_spec.setSequence(psm[4]);
                         current_spec.setProtein(psm[30]);
                         modification = psm[5];
-                        
+
                         //if modification present
-                        if (modification != "") {
+                        if (!modification.isEmpty()) {
                             temp = modification.split("|");
                             len_temp = temp.length;
-                            
+
                             //loop for the number of modification specified in the result
                             for (int k = 0; k < len_temp - 1;) {
                                 modPos = Integer.parseInt(temp[k]);
@@ -104,15 +110,18 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
                                 k++;
                             }
 
-                        }                         
+                        }
                         current_spec.setModification(mods);
                         identifiedSpecs.add(current_spec);
+                        break;
                     }
                 }
             }
 
         } catch (IOException e) {
+            
             e.printStackTrace();
+            
         }
 
         return identifiedSpecs;

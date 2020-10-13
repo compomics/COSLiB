@@ -13,28 +13,21 @@ import com.compomics.coslib.model.Data;
 public class MainClass {
 
     public static void main(String[] args) {
-        String ionbot_result_folder = "";
+        String ionbot_result_folder = "C://human_hcd/testfile_coslib/";
         Extract_inbotResult ex = new Extract_inbotResult(ionbot_result_folder);
         ex.Extract();
 
-        File fI = new File("");
-        File fO = new File("");
-        double precTolerance = 0;
-        double fragTolerance = 0;
-        Data d = new Data(fI, fO, precTolerance, fragTolerance);
-        
-        IndexSpectra spec = new IndexSpectra(d);
-        spec.ReadData();
-        
-        BuildLibrary build = new BuildLibrary(d);
-        build.Start();
-
-  
-
-        
-        
-        
-
-    }
+//        File fI = new File("");
+//        File fO = new File("");
+//        double precTolerance = 0;
+//        double fragTolerance = 0;
+//        Data d = new Data(fI, fO, precTolerance, fragTolerance);
+//        
+//        IndexSpectra spec = new IndexSpectra(d);
+//        spec.ReadData();
+//        
+//        BuildLibrary build = new BuildLibrary(d);
+//        build.Start();       
+         }
 
 }
