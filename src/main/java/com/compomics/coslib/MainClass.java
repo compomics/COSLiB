@@ -13,7 +13,7 @@ import com.compomics.coslib.model.Data;
 public class MainClass {
 
     public static void main(String[] args) {
-        String ionbot_result_folder = "C://human_hcd/testfile_coslib/";
+        String ionbot_result_folder = "C://human_hcd/testfile_coslib_small/";
         Extract_inbotResult ex = new Extract_inbotResult(ionbot_result_folder);
         ex.Extract();
 

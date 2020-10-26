@@ -9,8 +9,8 @@ import com.compomics.ms2io.model.Spectrum;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -33,23 +33,23 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
     public ArrayList<Spectrum> call() {
         ArrayList<Spectrum> identifiedSpecs = new ArrayList<>();
 
+        int count = 0;
         try {
             //read file here and instantiate indexer 
             ArrayList<IndexKey> fileIndex = new ArrayList<>();
             Indexer giExp = new Indexer(this.mgfFile);
-            
+
             //Generate index and add to fileIndex
             fileIndex.addAll(giExp.generate());
 
             //sort the index based on scan number in accending order
-            fileIndex.sort((spec1, spec2) -> spec1.getScanNum().compareTo(spec2.getScanNum()));
-
+            // fileIndex.sort((spec1, spec2) -> spec1.getScanNum().compareTo(spec2.getScanNum()));
             SpectraReader specReader = null;
             //create object to spectrum reader ms2io
             if (this.mgfFile.getName().endsWith("mgf")) {
-                
+
                 specReader = new MgfReader(mgfFile, fileIndex);
-                
+
             } else if (this.mgfFile.getName().endsWith("msp")) {
 
             }
@@ -64,67 +64,123 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
             line = br.readLine();
             int newLoc = 0;
             int num_spectra = fileIndex.size();
-            Spectrum current_spec;
+            Spectrum matched_spec=null;
             Modification mod;
             int modPos;
-            String modified_aa;
+            char modified_aa;
             String modName;
             String unimode;
 
+            String sequence;
+            int seqLen;
+            String protein;
             ArrayList<Modification> mods;
             String modification;
             String[] modMain;
             String[] temp;
+            
             int len_temp;
-            int count =0;
-            while ((line = br.readLine()) != null && specReader != null) {
+
+            if(specReader == null){
+                return null;
+            }
+            
+            while ((line = br.readLine()) != null) {
                 count++;
-                
+
                 mods = new ArrayList<>();
                 psm = line.split(",");
+                sequence = psm[4];
+                seqLen=sequence.length();
+                protein = psm[30];
                 scannum = Integer.parseInt(psm[1]);
-                for (int i = newLoc; i < num_spectra; i++) {
-                    current_spec = specReader.readAt(fileIndex.get(i).getPos());
-                    if (scannum == Integer.parseInt(current_spec.getScanNumber())) {
-                        newLoc = i + 1;
+                modification = psm[5];
 
-                        //set spectrum protein match and modification
-                        current_spec.setSequence(psm[4]);
-                        current_spec.setProtein(psm[30]);
-                        modification = psm[5];
+                //if modification present
+                if (!modification.isEmpty()) {
+                    temp = modification.split("\\|");
+                    len_temp = temp.length;
 
-                        //if modification present
-                        if (!modification.isEmpty()) {
-                            temp = modification.split("|");
-                            len_temp = temp.length;
-
-                            //loop for the number of modification specified in the result
-                            for (int k = 0; k < len_temp - 1;) {
-                                modPos = Integer.parseInt(temp[k]);
-                                modified_aa = current_spec.getSequence().substring(modPos);
-                                modMain = temp[++k].split("][");
-                                unimode = modMain[0];
-                                modName = modMain[1];
-                                mod = new Modification(modPos, modified_aa, modName, unimode);
-                                mods.add(mod);
-                                k++;
-                            }
+                    //loop for the number of modification specified in the result
+                    for (int k = 0; k < len_temp - 1;) {
+                        modPos = Integer.parseInt(temp[k]);
+                        if (modPos != 0) {
+                            modPos--;//change index to zero based
+                        } else {// value of 0 is for N-term modification and already 0
 
                         }
-                        current_spec.setModification(mods);
-                        identifiedSpecs.add(current_spec);
+
+                        if(modPos > seqLen-1){
+                            //this is for the case of C-Terminal modification
+                            //where modified aa position given outside of the index
+                            modPos=seqLen-1;
+                        }
+                        modified_aa = sequence.charAt(modPos);
+                        String delimiter = "\\s+|]\\s*|\\[\\s*";
+                        modMain = temp[++k].split(delimiter);
+                        if(modMain.length>1){
+                            unimode = modMain[1];
+                            modName = modMain[2];
+                        }else{
+                            modName = modMain[0];
+                            unimode="";
+                        }
+                        
+                        mod = new Modification(modPos, modified_aa, modName, unimode);
+                        mods.add(mod);
+                        k++;
+                    }
+
+                }
+
+                for (int i = newLoc; i < num_spectra; i++) {
+                    matched_spec = specReader.readAt(fileIndex.get(i).getPos());
+                    
+                    if (Integer.parseInt(matched_spec.getScanNumber()) ==  scannum){
+                        //set spectrum protein match and modification
+                        matched_spec.setSequence(sequence);
+                        matched_spec.setProtein(protein);
+                        matched_spec.setModification(mods);
+                        newLoc=i;
                         break;
                     }
+
                 }
+                
+                //get matched spectrum from list of spectra in mgf file
+                // Spectrum s=fileIndex.get
+                
+//               matched_spec = getSpectrum(fileIndex, scannum, specReader);
+
+//                //set spectrum protein match and modification
+//                matched_spec.setSequence(sequence);
+//                matched_spec.setProtein(protein);
+//                matched_spec.setModification(mods);
+
+                //add spectrum to list of identified spectra 
+                identifiedSpecs.add(matched_spec);
+
             }
 
-        } catch (IOException e) {
-            
-            e.printStackTrace();
-            
+        } catch (Exception e) {
+
+            System.out.println(e.toString() + ", this is the index: " + Integer.toString(count));
+
         }
 
         return identifiedSpecs;
+    }
+
+    private Spectrum getSpectrum(ArrayList<IndexKey> indxlist, int scannum, SpectraReader rd) {
+
+        Optional<IndexKey> matchingObject = indxlist.stream().
+                filter(p -> p.getScanNum().equals(scannum)).
+                findFirst();
+
+        
+        Spectrum spec = rd.readAt(matchingObject.get().getPos());
+
+        return spec;
     }
 
 }
