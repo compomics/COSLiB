@@ -64,8 +64,7 @@ public class Extract_inbotResult {
             }finally{                
                 for(SpectraWriter wr:wrs){
                      wr.closeWriter();
-                }        
-                
+                }                                    
             }
         }
         execs.shutdown();

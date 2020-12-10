@@ -14,8 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
- * This callable class creates list of spectra for a given ionbot result file
- * and corresponding mgf file and return to the caller
+ * This callable class creates list of spectra for a given ionbot result filefile and return to the caller
  *
  * @author Genet
  */
@@ -158,6 +157,7 @@ public class GetIdentifiedSpectra implements Callable<ArrayList<Spectrum>> {
 //                matched_spec.setModification(mods);
 
                 //add spectrum to list of identified spectra 
+                
                 identifiedSpecs.add(matched_spec);
 
             }
