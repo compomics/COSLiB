@@ -5,6 +5,7 @@
  */
 package com.compomics.coslib.controller;
 
+import com.compomics.coslib.controller.MatchedPeaks;
 import com.compomics.ms2io.model.Peak;
 import java.util.ArrayList;
 import java.util.Map;

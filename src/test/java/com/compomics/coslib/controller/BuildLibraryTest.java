@@ -1,5 +1,6 @@
 package com.compomics.coslib.controller;
 
+import com.compomics.coslib.controller.BuildLibrary;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,9 +1,0 @@
-com\compomics\coslib\controller\BuildLibrary.class
-com\compomics\coslib\controller\ProcessClusters.class
-com\compomics\coslib\controller\GetIdentifiedSpectra.class
-com\compomics\coslib\model\GroupingField.class
-com\compomics\coslib\controller\MatchedPeaks.class
-com\compomics\coslib\model\Data.class
-com\compomics\coslib\controller\IndexSpectra.class
-com\compomics\coslib\controller\Extract_inbotResult.class
-com\compomics\coslib\MainClass.class

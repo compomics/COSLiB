@@ -5,6 +5,7 @@
  */
 package com.compomics.coslib.controller;
 
+import com.compomics.coslib.controller.IndexSpectra;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

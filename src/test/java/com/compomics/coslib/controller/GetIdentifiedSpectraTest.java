@@ -5,6 +5,7 @@
  */
 package com.compomics.coslib.controller;
 
+import com.compomics.coslib.controller.GetIdentifiedSpectra;
 import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
 import org.junit.AfterClass;
@@ -37,8 +38,8 @@ public class GetIdentifiedSpectraTest {
         System.out.println("call");
         GetIdentifiedSpectra instance = null;
         ArrayList<Spectrum> expResult = null;
-        ArrayList<Spectrum> result = instance.call();
-        assertEquals(expResult, result);
+        instance.run();
+        //assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

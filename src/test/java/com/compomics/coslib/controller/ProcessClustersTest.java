@@ -5,6 +5,7 @@
  */
 package com.compomics.coslib.controller;
 
+import com.compomics.coslib.controller.ProcessClusters;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

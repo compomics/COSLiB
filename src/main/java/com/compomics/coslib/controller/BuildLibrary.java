@@ -236,6 +236,13 @@ public class BuildLibrary {
     private Spectrum AveragingSpecs(ArrayList<Spectrum> samespecs) {
         Spectrum representative_spec = samespecs.get(0);
         int len_specs_original = samespecs.size();
+        double pc_mass=0;
+        for(Spectrum s:samespecs){
+            pc_mass+=s.getPCMass();
+        }
+        pc_mass=pc_mass/len_specs_original;
+        representative_spec.setPCMass(pc_mass);        
+        
         ArrayList<Peak> newPeakList = new ArrayList<>();
         double intensity;
         double mz;
@@ -247,6 +254,7 @@ public class BuildLibrary {
         int len_specs = len_specs_original;
         List<Integer> delIndex ;
         int indx;
+        
         
         while (len_specs > 0) {
 
@@ -277,7 +285,7 @@ public class BuildLibrary {
                 indx++;
             }
 
-            //if peak occurence is less than 50% discard
+            //if peak occurence is less than 50%, discard
             if (peak_occurence / len_specs_original >= 0.5) {
                 pk = new Peak(mz / peak_occurence, intensity / peak_occurence, "\"?\"");
                 newPeakList.add(pk);
