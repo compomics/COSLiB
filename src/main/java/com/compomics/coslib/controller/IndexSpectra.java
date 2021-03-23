@@ -31,11 +31,9 @@ public class IndexSpectra {
                 
             }else if(this.data.getInputFile().getName().endsWith("msp")){
                 
-            }
-                
+            }              
             
-            this.data.setIndex((ArrayList<IndexKey>) giExp.generate());
-            
+            this.data.setIndex((ArrayList<IndexKey>) giExp.generate());            
             //sort the index based on precursor mass in accending order
             SortIndex();
         } catch (IOException ex) {

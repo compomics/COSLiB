@@ -66,7 +66,7 @@ public class Extract_inbotResult {
             for (File ionbot_result : list_ionbotfiles) {
                 try {
 
-                    if (ionbot_result.getName().contains("meta") || ionbot_result.getName().contains("stats") || !ionbot_result.getName().endsWith("csv")) {
+                    if (ionbot_result.getName().contains("proteins") || ionbot_result.getName().contains("meta") || ionbot_result.getName().contains("stats") || !ionbot_result.getName().endsWith("csv")) {
                         continue;
                     }
 
